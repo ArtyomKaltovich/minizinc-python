@@ -3,6 +3,8 @@
 #  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import enum
 
+import numpy as np
+
 from support import InstanceTestCase
 
 from minizinc import Instance
@@ -132,3 +134,33 @@ class TestString(InstanceTestCase):
 
         result = self.instance.solve()
         assert result.solution.name in names
+
+
+class TestNumpy1dArray(InstanceTestCase):
+    code = """
+    array[int] of int: arr;
+    var int: s;
+    constraint s = sum(arr);
+    """
+
+    def test_array(self):
+        arr = np.array([1, 2])
+        self.instance["arr"] = arr
+
+        result = self.instance.solve()
+        assert result.solution.s == 3
+
+
+class TestNumpy2dArray(InstanceTestCase):
+    code = """
+    array[int, int] of int: arr;
+    var int: s;
+    constraint s = sum(arr);
+    """
+
+    def test_array(self):
+        arr = np.array([[1, 2], [3, 4]])
+        self.instance["arr"] = arr
+
+        result = self.instance.solve()
+        assert result.solution.s == 10
