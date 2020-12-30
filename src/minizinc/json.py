@@ -5,6 +5,13 @@
 from enum import Enum
 from json import JSONDecoder, JSONEncoder
 
+try:
+    import numpy as np
+except:
+    class np:
+        class ndarray:
+            pass  # stub for isinstance check
+
 
 class MZNJSONEncoder(JSONEncoder):
     def default(self, o):
@@ -12,6 +19,8 @@ class MZNJSONEncoder(JSONEncoder):
             return {"e": o.name}
         if isinstance(o, set) or isinstance(o, range):
             return {"set": [{"e": i.name} if isinstance(i, Enum) else i for i in o]}
+        if isinstance(o, np.ndarray):
+            return o.tolist()
 
         return super().default(o)
 
